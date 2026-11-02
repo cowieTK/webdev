@@ -9,13 +9,13 @@ async function fetch_pokemon(pokemon_name) {
         const bonkresponse = await fetch(`http://localhost:3000/getdog`);
         const bonkdog = await bonkresponse.json();
         console.log('bonk get: ', bonkdog);
-        // crude ahh validity check
         if (pokemon.id != undefined) {
             display_pokemon_info(pokemon);
             update_bonkdog(bonkdog, pokemon);
             display_bonk_info(bonkdog);
             display_pokemon_img(pokemon);
             display_bonk_img(bonkdog);
+            display_bonk_gif(bonkdog, pokemon);
         }
         else {
             alert("something has gone wrong terribly, you are to blame (wrong name prolly lol)");
@@ -73,13 +73,11 @@ async function display_bonk_info(bonkdog) {
 async function display_pokemon_img(pokemon) {
     const imgElement = document.getElementById('pokeimage');
     const artwork = pokemon.sprites.other['official-artwork'].front_default;
-    // make visible
     imgElement.style.display = 'block';
     imgElement.src = artwork;
 }
 async function display_bonk_img(bonkdog) {
     const imgElement = document.getElementById('bonkimage');
-    // make visible
     imgElement.style.display = 'block';
     if (bonkdog.fired_up) {
         imgElement.src = '../content/bonkdog_fire.png';
@@ -90,6 +88,16 @@ async function display_bonk_img(bonkdog) {
     else {
         imgElement.src = '../content/bonkdog.png';
     }
+}
+async function display_bonk_gif(bonkdog, pokemon) {
+    // has to be flex for them to be in a row
+    document.getElementById('fight_container').style.display = 'flex';
+    const pokeFightImg = document.getElementById('bonkpoke');
+    pokeFightImg.style.display = 'block';
+    pokeFightImg.src = pokemon.sprites.other['official-artwork'].front_default;
+    const bonkGifElement = document.getElementById('bonkgif');
+    bonkGifElement.style.display = 'block';
+    bonkGifElement.src = '../content/bonk_hit_gif.gif';
 }
 button?.addEventListener('click', () => {
     const pokemonName = input.value;
