@@ -11,9 +11,9 @@ app.use((req, res, next) => {
 });
 
 // pokemon get
-app.get('/test/:id', async (req, res) => {
+app.get('/test/:name', async (req, res) => {
 
-    const pokemon_name: string = req.params.id;
+    const pokemon_name: string = req.params.name;
 
     try {   
         // no timeout for now
@@ -25,6 +25,7 @@ app.get('/test/:id', async (req, res) => {
         res.status(500).send('API fetch fucked');
     }
 });
+
 
 app.listen(3000, () => {
     console.log('Server running at http://localhost:3000');

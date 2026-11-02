@@ -8,8 +8,8 @@ app.use((req, res, next) => {
     next();
 });
 // pokemon get
-app.get('/test/:id', async (req, res) => {
-    const pokemon_name = req.params.id;
+app.get('/test/:name', async (req, res) => {
+    const pokemon_name = req.params.name;
     try {
         // no timeout for now
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon_name}`);
