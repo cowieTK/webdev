@@ -1,39 +1,25 @@
 const input = document.getElementById('userInput') as HTMLInputElement;
 const button = document.getElementById('sendBtn');
 
-
-type Bonkdog = {
-    hp: number;
-    attack: number;
-    defence: number;
-    special_attack: number;
-    special_defence: number;
-    speed: number;
-};
-
-const bonkdog: Bonkdog = {
-    hp: 100,
-    attack: 150,
-    defence: 75,
-    special_attack: 50,
-    special_defence: 70,
-    speed: 100,
-};
-
 async function fetch_pokemon(pokemon_name: string) {
 
     try {
 
-        const response = await fetch(`http://localhost:3000/test/${pokemon_name}`);
-        const pokemon = await response.json();
-        console.log('Data get:', pokemon); 
+        const pokeresponse = await fetch(`http://localhost:3000/test/${pokemon_name}`);
+        const pokemon = await pokeresponse.json();
+        console.log('poke get:', pokemon); 
+
+        const bonkresponse = await fetch(`http://localhost:3000/getdog`);
+        const bonkdog = await bonkresponse.json();
+        console.log('bonk get: ', bonkdog);
 
         // crude ahh validity check
         if (pokemon.id != undefined) {
             display_pokemon_info(pokemon);
-            display_bonk_info();
+            update_bonkdog(bonkdog, pokemon);
+            display_bonk_info(bonkdog);
             display_pokemon_img(pokemon);
-            display_bonk_img();
+            display_bonk_img(bonkdog);
         } else {
             alert("something has gone wrong terribly, you are to blame (wrong name prolly lol)");
         }
@@ -44,8 +30,28 @@ async function fetch_pokemon(pokemon_name: string) {
     }
 }
 
-async function display_pokemon_info(pokemon: any) {
+async function update_bonkdog(bonkdog: any, pokemon: any){
 
+    let types = pokemon.types;
+
+    for (const type of types) {
+        if (type.type.name == 'grass') {
+            bonkdog.fired_up = true;
+            break;
+        } else {
+            bonkdog.fired_up = false;
+        }
+        if (type.type.name == 'fire') {
+            bonkdog.iced_up = true;
+            break;
+        } else {
+            bonkdog.iced_up = false;
+        }
+    }
+}
+
+async function display_pokemon_info(pokemon: any) {
+    
     document.getElementById('pokemonchosen')!.textContent = 'you have chosen: ' + pokemon.name;
     document.getElementById('pokehp')!.textContent = 'hp: ' + pokemon.stats[0].base_stat;
     document.getElementById('pokeattack')!.textContent = 'attack: ' + pokemon.stats[1].base_stat;
@@ -56,10 +62,16 @@ async function display_pokemon_info(pokemon: any) {
 
 }
 
+async function display_bonk_info(bonkdog: any) {
 
-async function display_bonk_info() {
+    if (bonkdog.fired_up) {
+        document.getElementById('bonkchosen')!.textContent = 'your opponent chooses: BONKDOG (FIRE TYPE)';
+    } else if (bonkdog.iced_up) {
+        document.getElementById('bonkchosen')!.textContent = 'your opponent chooses: BONKDOG (ICE TYPE, very chill)';
+    } else {
+        document.getElementById('bonkchosen')!.textContent = 'your opponent chooses: BONKDOG';
+    }
 
-    document.getElementById('bonkchosen')!.textContent = 'your opponent chooses: BONKDOG';
     document.getElementById('bonkhp')!.textContent = 'hp: ' + bonkdog.hp.toString();
     document.getElementById('bonkattack')!.textContent = 'attack: ' + bonkdog.attack.toString();
     document.getElementById('bonkdefence')!.textContent = 'defence: ' + bonkdog.defence.toString();
@@ -77,14 +89,19 @@ async function display_pokemon_img(pokemon: any) {
     imgElement.src = artwork 
 }
 
-async function display_bonk_img() {
+async function display_bonk_img(bonkdog: any) {
     const imgElement = document.getElementById('bonkimage') as HTMLImageElement;
     // make visible
     imgElement.style.display = 'block';
-    imgElement.src = '../content/bonkdog.png';
+    if (bonkdog.fired_up) {
+        imgElement.src = '../content/bonkdog_fire.png';
+    } else if (bonkdog.iced_up) {
+        imgElement.src = '../content/bonkdog_ice.png';
+    } else  {
+        imgElement.src = '../content/bonkdog.png';
+    }
+    
 }
-
-
 
 button?.addEventListener('click', () => {
 
